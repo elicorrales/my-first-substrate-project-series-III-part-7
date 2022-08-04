@@ -28,7 +28,7 @@ const { ContractPromise } = require('@polkadot/api-contract');
 ```
   
 What is the ```wsApi``` for?  I didn't find extensive docs on this but it's most likely required by the ```ContractPromise``` to actually communicate.  
-What is the ```metadata``?  If you take a look at your smart contract's ```target/ink/metadata.json``` file, that's what we want to pass as the ```metadata``` parameter.  (More on this in a bit).  
+What is the ```metadata```?  If you take a look at your smart contract's ```target/ink/metadata.json``` file, that's what we want to pass as the ```metadata``` parameter.  (More on this in a bit).  
 What is the ```contractAddress```?  This is that string that is produced at the end of doing a ```cargo contract instantiate...```.  
 Sample:  
 ```  
