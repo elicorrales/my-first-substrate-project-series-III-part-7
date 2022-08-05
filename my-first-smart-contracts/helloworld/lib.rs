@@ -9,6 +9,8 @@ mod hello_world {
         pub fn new() -> Self {
             Self {}
         }
+
+        // notice that both types of logging calls work
         #[ink(message)]
         pub fn sayhello(&self) {
             ink_env::debug_println!("\n\nSaying Hi from 'sayhello'\n\n");
