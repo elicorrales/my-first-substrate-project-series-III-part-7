@@ -83,6 +83,7 @@ const wsUrl = 'ws://localhost:9944';
 
 //Get the project's complete smart-contract metadata path param so we can get 
 //metadata.json's contents.
+//Note that this path assumes you ran 'node client.js' while in the actual client.js' directory. 
 let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
 //a little sanity check
 if (!metadataPath.endsWith('target/ink/metadata.json')) {
