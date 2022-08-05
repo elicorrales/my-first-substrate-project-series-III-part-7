@@ -338,7 +338,7 @@ const metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata
 //convert the metadata file constants into local variable
 const metadata = require(metadataPath);
 
-//make sure this address is correct for YOUR uploaded contract.
+//make sure this address is correct for YOUR uploaded/instantiated contract.
 const contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
 
 (async () => {
