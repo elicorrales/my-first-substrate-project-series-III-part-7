@@ -232,15 +232,6 @@ We add:
 //        |__helloworld/
 //
 let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
-
-//a little sanity check
-if (!metadataPath.endsWith('target/ink/metadata.json')) {
-    console.log('\n\nFILE metadata.json missing (not built?)');
-    console.log('OR WRONG PATH:', metadataPath);
-    return;
-
-}
-
 const metadata = require(metadataPath);
 ```
   
@@ -252,14 +243,6 @@ const wsUrl = 'ws://localhost:9944';
 
 //lots of comments here snipped out
 let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
-
-//a little sanity check
-if (!metadataPath.endsWith('target/ink/metadata.json')) {
-    console.log('\n\nFILE metadata.json missing (not built?)');
-    console.log('OR WRONG PATH:', metadataPath);
-    return;
-
-}
 
 //const metadata = '{}';
 
