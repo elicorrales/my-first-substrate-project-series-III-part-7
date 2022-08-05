@@ -106,7 +106,7 @@ const metadata = '{}';
     const contract = new ContractPromise(wsApi, metadata, contractAddress);
 
     //tempApi
-    //let tempApi = new ApiPromise(); <-- more on this further down
+    //let tempApi = new ApiPromise();
     //const contract = new ContractPromise(tempApi, metadata, contractAddress);
 
     wsApi.disconnect();
@@ -124,7 +124,7 @@ As of now, ```client.js```:
 
 # What Are the Effects of the 1st Param ```wsApi```?  
   
-Next, comment out both of the lines under ```//wsApi```, and Uncomment both under ```tempApi```.  
+Next, comment out both of the lines under ```//wsApi```, and Uncomment both under ```//tempApi```.  
   
 
 Run ```node client.js``` (code below)
@@ -159,6 +159,7 @@ let contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
 #### What did we learn?
 As of now, ```client.js```:
 - Where it failed was inside the creation (```new ContractPromise(...blah .)```
+- It did NOT fail on the creation of ```tempApi```
 - There **was** some checking done to see if it's a live connection to the contracts node
   
 
@@ -205,11 +206,11 @@ tx:
   
 
 #### What did we learn?
-- contract.query is a thing. It's valid. But empty.
-- contract.txt is also a valid thing. But empty.
+- ```contract.query``` is a thing. It's valid. But empty.
+- ```contract.tx``` is also a valid thing. But empty.
   
 
-Remember we have two empty JSON responses, to compare to what's next.  
+Remember we have two empty JSON responses, so we can compare to what's next (below).  
   
 Now, let's make ```metadata``` be something real.  
   
@@ -220,6 +221,16 @@ We add:
 //metadata.json's contents.
 //make sure that YOUR path is correct; it may be different from (below).
 //This relative path assumes you did 'node client.js' within the client project directory.
+// It assumes this tree:
+//
+// .(our top-level overall project)
+// |
+// |__my-first-client/  <-- we ran 'node client.js' while in here
+// |      |__client.js
+// |
+// |__my-first-smart-contracts/
+//        |__helloworld/
+//
 let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
 
 //a little sanity check
@@ -239,10 +250,7 @@ const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
 const { ContractPromise } = require('@polkadot/api-contract');
 const wsUrl = 'ws://localhost:9944';
 
-//Get the project's complete smart-contract metadata path param so we can get 
-//metadata.json's contents.
-//make sure that YOUR path is correct; it may be different from (below).
-//This relative path assumes you did 'node client.js' within the client project directory.
+//lots of comments here snipped out
 let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
 
 //a little sanity check
@@ -294,6 +302,8 @@ tx:
     .....stuff snipped from here...
   }
 }
+```
+  
 
 #### What did we learn?
 As of now, ```client.js```:
@@ -301,4 +311,19 @@ As of now, ```client.js```:
   
 But so what.  
 What effect does that have.  
+We'll see as we move along.  
 
+# We Finally Let's Try To Interact With The Contract
+  
+Make sure you have:
+- built the contract
+- are running the local node(blockchain)
+- have uploaded the contract
+- have instantiated the contract
+  
+
+In order to do a transaction with the contract, someone has to pay for it.  
+  
+So we'll get ```//Alice``` to pay for it.  
+  
+ 
