@@ -69,10 +69,10 @@ const { ContractPromise } = require('@polkadot/api-contract');
 })();
 ```
   
-How does the above affect running ```client.js``` ?  
+
+# How does the above affect running ```client.js``` ?  
   
 - Start up your local ```substrate-contracts-node```
-- Do ```cargo +nightly contract build``` (so you can have a ```target/ink/metadata.json```)
 - Run ```node``` on this ```client.js``` (code below)
 - Choose to UN-comment only one of the (TRY #1, TRY #2, TRY #3) to see what happens.
 
@@ -81,21 +81,7 @@ const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
 const { ContractPromise } = require('@polkadot/api-contract');
 const wsUrl = 'ws://localhost:9944';
 
-//Get the project's complete smart-contract metadata path param so we can get 
-//metadata.json's contents.
-//Note that this path assumes you ran 'node client.js' while in the actual client.js' directory. 
-let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
-//a little sanity check
-if (!metadataPath.endsWith('target/ink/metadata.json')) {
-    console.log('\n\nFILE metadata.json missing (not built?)');
-    console.log('OR WRONG PATH:', metadataPath);
-    return;
-
-}
-
-//convert the metadata file constants into local variable
-const metadata = require(metadataPath);
-//console.log(metadata);
+const metadata = '{}';
 
 //TRY #1
 //let contractAddress = 'thisisaboguscontractaddress';
@@ -109,17 +95,210 @@ const metadata = require(metadataPath);
 
 //TRY #3
 //let contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
-
+//This works just fine.
 
 (async () => {
     //connect to our local substrate node
     let ws = new WsProvider(wsUrl);
+
+    //wsApi
     let wsApi = await ApiPromise.create({ provider: ws });
     const contract = new ContractPromise(wsApi, metadata, contractAddress);
+
+    //tempApi
+    //let tempApi = new ApiPromise(); <-- more on this further down
+    //const contract = new ContractPromise(tempApi, metadata, contractAddress);
+
     wsApi.disconnect();
 })();
 ```
   
-What did we learn?  We learn that so far, your ```client.js``` does not know whether your contract is actually deployed on to the local node.  
+
+#### What did we learn?
+As of now, ```client.js```:
+- does perform some checks on the ```contractAddress```, but
+- does not know whether your contract is actually deployed on to the local node
+- does not care too much about ```metadata```
   
+
+
+# What Are the Effects of the 1st Param ```wsApi```?  
+  
+Next, comment out both of the lines under ```//wsApi```, and Uncomment both under ```tempApi```.  
+  
+
+Run ```node client.js``` (code below)
+```
+const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
+const { ContractPromise } = require('@polkadot/api-contract');
+const wsUrl = 'ws://localhost:9944';
+
+const metadata = '{}';
+
+let contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
+
+(async () => {
+    //connect to our local substrate node
+    let ws = new WsProvider(wsUrl);
+
+    //wsApi
+    //let wsApi = await ApiPromise.create({ provider: ws });
+    //const contract = new ContractPromise(wsApi, metadata, contractAddress);
+
+    //tempApi
+    let tempApi = new ApiPromise(); <-- more on this further down
+    const contract = new ContractPromise(tempApi, metadata, contractAddress);
+    //ERROR:
+    // Your API has not been initialized correctly and is not connected to a chain
+
+    wsApi.disconnect();
+})();
+```
+  
+
+#### What did we learn?
+As of now, ```client.js```:
+- Where it failed was inside the creation (```new ContractPromise(...blah .)```
+- There **was** some checking done to see if it's a live connection to the contracts node
+  
+
+# What Some Effects Of The 2nd Param ```metadata```?  
+Next, add the following:  
+```
+    console.log('query:\n', contract.query);
+    console.log('tx:\n', contract.tx);
+```
+  
+
+Run ```node client.js``` (code below)  
+```
+const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
+const { ContractPromise } = require('@polkadot/api-contract');
+const wsUrl = 'ws://localhost:9944';
+
+const metadata = '{}';
+
+let contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
+
+(async () => {
+    //connect to our local substrate node
+    let ws = new WsProvider(wsUrl);
+
+    wsApi
+    let wsApi = await ApiPromise.create({ provider: ws });
+    const contract = new ContractPromise(wsApi, metadata, contractAddress);
+
+    console.log('query:\n', contract.query);
+    console.log('tx:\n', contract.tx);
+
+    wsApi.disconnect();
+})();
+```
+  
+The output:  
+```
+query:
+ {}
+tx:
+ {}
+```
+  
+
+#### What did we learn?
+- contract.query is a thing. It's valid. But empty.
+- contract.txt is also a valid thing. But empty.
+  
+
+Remember we have two empty JSON responses, to compare to what's next.  
+  
+Now, let's make ```metadata``` be something real.  
+  
+
+We add:
+```
+//Get the project's complete smart-contract metadata path param so we can get 
+//metadata.json's contents.
+//make sure that YOUR path is correct; it may be different from (below).
+//This relative path assumes you did 'node client.js' within the client project directory.
+let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
+
+//a little sanity check
+if (!metadataPath.endsWith('target/ink/metadata.json')) {
+    console.log('\n\nFILE metadata.json missing (not built?)');
+    console.log('OR WRONG PATH:', metadataPath);
+    return;
+
+}
+
+const metadata = require(metadataPath);
+```
+  
+Run ```node client.js``` (code below)  
+```
+const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
+const { ContractPromise } = require('@polkadot/api-contract');
+const wsUrl = 'ws://localhost:9944';
+
+//Get the project's complete smart-contract metadata path param so we can get 
+//metadata.json's contents.
+//make sure that YOUR path is correct; it may be different from (below).
+//This relative path assumes you did 'node client.js' within the client project directory.
+let metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
+
+//a little sanity check
+if (!metadataPath.endsWith('target/ink/metadata.json')) {
+    console.log('\n\nFILE metadata.json missing (not built?)');
+    console.log('OR WRONG PATH:', metadataPath);
+    return;
+
+}
+
+//const metadata = '{}';
+
+//convert the metadata file constants into local variable
+const metadata = require(metadataPath);
+
+let contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
+
+(async () => {
+    //connect to our local substrate node
+    let ws = new WsProvider(wsUrl);
+
+    let wsApi = await ApiPromise.create({ provider: ws });
+    const contract = new ContractPromise(wsApi, metadata, contractAddress);
+
+    console.log('query:\n', contract.query);
+    console.log('tx:\n', contract.tx);
+
+    wsApi.disconnect();
+})();
+```
+  
+The output:  
+```
+query:
+ {
+  sayhello: [Function (anonymous)] {
+    .....stuff snipped from here...
+  },
+  saybye: [Function (anonymous)] {
+    .....stuff snipped from here...
+  }
+}
+tx:
+ {
+  sayhello: [Function (anonymous)] {
+    .....stuff snipped from here...
+  },
+  saybye: [Function (anonymous)] {
+    .....stuff snipped from here...
+  }
+}
+
+#### What did we learn?
+As of now, ```client.js```:
+- The contents of the external file ```metadata.json``` are used for ```query``` and ```tx```.
+  
+But so what.  
+What effect does that have.  
 
