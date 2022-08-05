@@ -295,8 +295,13 @@ As of now, ```client.js```:
 But so what.  
 What effect does that have.  
 We'll see as we move along.  
+  
 
 # We Finally Let's Try To Interact With The Contract
+  
+### The associated video is getting long so we will finish here with a simple contract communication and very little explanation
+
+#### We will go into more detail in the next part (Part 8).  
   
 Make sure you have:
 - built the contract
@@ -309,4 +314,51 @@ In order to do a transaction with the contract, someone has to pay for it.
   
 So we'll get ```//Alice``` to pay for it.  
   
- 
+```
+const { WsProvider, ApiPromise, Keyring } = require('@polkadot/api');
+const { ContractPromise } = require('@polkadot/api-contract');
+const wsUrl = 'ws://localhost:9944';
+
+//make sure this is the correct address for //Alice.
+//for now, on the command line, do:
+//
+//   substrate-contracts-node key inspect //Alice
+//
+//you should see the address:
+//
+//  Public key (SS58): 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+//  SS58 Address:      5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+//
+const aliceAddress = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+
+
+//make sure this path is correct for YOUR project.
+const metadataPath = '../my-first-smart-contracts/helloworld/target/ink/metadata.json';
+
+//convert the metadata file constants into local variable
+const metadata = require(metadataPath);
+
+//make sure this address is correct for YOUR uploaded contract.
+const contractAddress = '5H2EXJWscxyMLjmxKP2KhJmQ6JsUr67MQfgEoUUkrizXVgbz';
+
+(async () => {
+    //connect to our local substrate node
+    const ws = new WsProvider(wsUrl);
+
+    const wsApi = await ApiPromise.create({ provider: ws });
+    const contract = new ContractPromise(wsApi, metadata, contractAddress);
+
+    console.log('query:\n', contract.query);
+    console.log('tx:\n', contract.tx);
+
+    const gasLimit = -1;
+
+    const { result, output } = await contract.query.sayhello(aliceAddress, { gasLimit });
+    console.log('result:', result.toHuman());
+    console.log('out:', output != undefined ? output.toHuman() : null);
+
+    wsApi.disconnect();
+})();
+``` 
+  
+
