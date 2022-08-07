@@ -33,7 +33,7 @@ then
 fi;
 
 
-cd ~/MySoftwareProjects/blockchain/rust/rust-substrate-blockchain-projects/my-first-substrate-projects/my-first-project-prep-lesson/my-first-smart-contracts;
+cd ~/MySoftwareProjects/blockchain/rust/rust-substrate-blockchain-projects/my-first-substrate-projects/my-first-project/my-first-smart-contracts;
 
 #this should be the directory where Cargo.toml and lib.rs are located.
 cd $projectdir; # which rust smart contract project to work with;
